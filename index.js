@@ -1,9 +1,11 @@
 require("dotenv").config();
 require("./db");
 const express = require("express");
-const Shorturl = require("./models/shorturl");
 const cors = require("cors");
-const routers = require('./router/router')
+const routers = require('./router/router');
+const errorInformer = require("./middleware/errorInformer");
+const {success} = require('./handlers/responseHandler')
+const successMessages = require('./constants/successMessages.json')
 
 const app = express();
 const PORT = process.env.PORT || 8888;
@@ -17,17 +19,15 @@ app.use(
     })
 );
 
-app.get("/", (req, res) => {
-    return res.json({
-        status: true,
-        message: "Yo, this is url shortener server 🚀",
-        data: null,
-    });
+app.get("/", (_, res) => {
+    return success(res, successMessages.WELCOME, null)
 });
 
 routers.forEach(({ version, router }) => {
     app.use(`/api/${version}`, router);
 });
+
+app.use(errorInformer)
 
 app.listen(PORT, () => {
     console.log(`App is listening on port ${PORT}`);

@@ -1,65 +1,77 @@
 const Shorturl = require("../../models/shorturl");
+const { success } = require("../../handlers/responseHandler");
+const errorMessages = require('../../constants/errorMessages.json')
+const successMessage = require('../../constants/successMessages.json')
+const {Bad, BadRequestError} = require('../../handlers/errorHandler');
+const { StatusCodes } = require("http-status-codes");
 const shortUrlController = {};
 
-shortUrlController.createShortUrl = async (req, res) => {
+shortUrlController.createShortUrl = async (req, res, next) => {
     try {
         const { full } = req.body;
+        if (!full) {
+            throw new BadRequestError(errorMessages.PROVIDE_ALL_FIELDS)
+        }
+        
         await Shorturl.create({ full });
-        return res.status(200).json({
-            status: true,
-            message: "Short Url is created successfully!",
-            data: null,
-        });
-    } catch (error) {
-        console.log("Error in creating short url: ", Error);
+        return success(res, successMessage.SHORT_URL_CREATED, null, StatusCodes.CREATED)
+    } catch (err) {
+        console.log("Error in creating short url: ", err);
+        next(err);
     }
 };
 
-shortUrlController.getAllShortUrls = async (_, res) => {
+shortUrlController.getAllShortUrls = async (_, res, next) => {
     try {
         const urls = await Shorturl.find().select("-__v ");
-        return res.status(200).json({
-            status: true,
-            message: "Short Url is created successfully!",
-            data: urls,
-        });
-    } catch (error) {
-        console.log("Error during getting the short urls: ", error);
+        return success(res, successMessage.SHORT_URL_FETCHED, urls)
+    } catch (err) {
+        console.log("Error during getting the short urls: ", err);
+        next(err)
     }
 };
 
-shortUrlController.getOriginalUrl = async (req, res) => {
+shortUrlController.getOriginalUrl = async (req, res, next) => {
     try {
         const { url } = req.params;
         if (!url && url === "") {
-            console.log("I'm here");
-            return res.status(400).json({
-                status: true,
-                message: "Enter a valid url!",
-                data: null,
-            });
+            throw new BadRequestError(errorMessages.NOT_VALID_URL)
         }
-        console.log("Url: ", url);
+
         const fullUrl = await Shorturl.findOne({ short: url }).select("-__v");
         if (!fullUrl) {
-            console.log("I'm not here", fullUrl);
-            return res.status(400).json({
-                status: true,
-                message: "Enter a valid url!",
-                data: null,
-            });
+            throw new BadRequestError(errorMessages.NOT_VALID_URL)
         }
 
-        fullUrl.clicks += 1;
+        fullUrl.clicks += 1; 
         fullUrl.save();
 
-        return res.status(200).json({
-            status: true,
-            message: "Short Url is found successfully!",
-            data: fullUrl,
-        });
-    } catch (error) {
-        console.log("Error during resolving into full url: ", error);
+        return success(res, successMessage.ORIGINAL_URL_FETCHED, fullUrl)
+    } catch (err) {
+        console.log("Error during resolving into full url: ", err);
+        next(err)
+    }
+};
+
+shortUrlController.updateCustonUrl = async (req, res, next) => {
+    try {
+        const { id, customUrl } = req.body;
+        if (!id || !customUrl) {
+            throw new BadRequestError(errorMessages.PROVIDE_ALL_FIELDS)
+        }
+
+        const url = await Shorturl.findOne({ _id: id }).select("-__v");
+        console.log(url);
+        if (!url) {
+            throw new BadRequestError(errorMessages.NOT_VALID_URL)
+        }
+        url.short = customUrl;
+        url.save();
+
+        return success(res, successMessage.SHORT_URL_UPDATED, url)
+    } catch (err) {
+        console.log("error in shortUrlController.changeCustonUrl: ", err);
+        next(err)
     }
 };
 

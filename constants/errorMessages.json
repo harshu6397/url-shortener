@@ -1,0 +1,9 @@
+{
+  "INTERNAL_SERVER_ERROR": "Internal Server Error",
+  "NOT_FOUND": "Not Found",
+  "BAD_REQUEST": "Bad Request",
+  "UNAUTHORIZED": "Unauthorized",
+  "PROVIDE_ALL_FIELDS": "Please provide all fields",
+  "NOT_VALID_URL": "Not a valid URL",
+  "SHORT_URL_ALREADY_EXISTS": "Short URL already exists"
+}

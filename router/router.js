@@ -18,11 +18,18 @@ const routes = [
         callback: "getAllShortUrls",
     },
     {
-        route: "/:url",
+        route: "/getLongUrl/:url",
         method: "GET",
         version: [V1],
         controller: "shortUrl",
         callback: "getOriginalUrl",
+    },
+    {
+        route: "/updateCustomUrl",
+        method: "PATCH",
+        version: [V1],
+        controller: "shortUrl",
+        callback: "updateCustonUrl",
     },
 ];
 

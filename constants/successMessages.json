@@ -1,0 +1,8 @@
+{
+  "WELCOME": "Welcome to URL Shortener API",
+  "SHORT_URL_CREATED": "Short Url is created successfully!",
+  "SHORT_URL_FETCHED": "Short Url is fetched successfully!",
+  "ORIGINAL_URL_FETCHED": "Original Url is fetched successfully!",
+  "SHORT_URL_UPDATED": "Short Url is updated successfully!"
+
+}
