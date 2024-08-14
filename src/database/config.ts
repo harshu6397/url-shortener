@@ -5,7 +5,7 @@ module.exports = {
     port: 3306,
     username: "root",
     password: "rootharsh123",
-    database: "kivo_calander"
+    database: "url_shortener"
   },
   staging: {
     dialect: "mysql",

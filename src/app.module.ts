@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/envs/configuration';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { getSequelizeConfig } from './config/sequelize.config';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { getSequelizeConfig } from './config/sequelize.config';
       useFactory: async (configService: ConfigService) => getSequelizeConfig(configService),
       inject: [ConfigService],
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
