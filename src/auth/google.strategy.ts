@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { UserService } from '../user/user.service';
 import { generateRandomPassword } from 'src/utils/common';
+import { USER_SELECT } from 'src/constants/selectedDBFields.json';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -19,7 +20,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     console.log('profile: ', profile);
     const { name, emails } = profile;
     const email = emails[0].value;
-    let user = await this.userService.findByEmail(email);
+    // let user = await this.userService.findByEmail(email);
+    let user = await this.userService.findUser({ email }, USER_SELECT);
 
     if (!user) {
       user = await this.userService.createUser({

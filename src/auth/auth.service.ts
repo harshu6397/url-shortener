@@ -13,27 +13,23 @@ export class AuthService {
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<any> {
-    try {
-      console.log('createUserDto: ', createUserDto);
-      const { email } = createUserDto;
-      const existingUser = await this.userService.findByEmail(email);
-      if (existingUser) {
-        throw new ConflictException('User with this email already exists');
-      }
+    const { email } = createUserDto;
+    const existingUser = await this.userService.findUser({ email }, ['email']);
 
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      return this.userService.createUser({
-        ...createUserDto,
-        password: hashedPassword,
-      });
-    } catch (error) {
-      console.log('error: ', error);
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
     }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    return this.userService.createUser({
+      ...createUserDto,
+      password: hashedPassword,
+    });
   }
 
   async login(signInUserDto: SignInUserDto): Promise<any> {
     const { email, password } = signInUserDto;
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findUser({ email }, ['email', 'password']);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

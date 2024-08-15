@@ -11,25 +11,39 @@ export class UserService {
     private userModel: typeof User,
   ) {}
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userModel.findOne({ where: { email } });
-  }
-
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    return this.userModel.create(createUserDto);
-  }
-
-  async findById(userId: string): Promise<User> {
-    const user = await this.userModel.findOne({ where: { uniqueId: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      return await this.userModel.create(createUserDto);
+    } catch (error) {
+      console.log(error);
     }
-    return user;
   }
 
-  async updateProfile(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findById(userId);
-    await user.update(updateUserDto);
-    return user;
+  async findUser(
+    conditions: Partial<User>,
+    selectedFields: Array<string> = ['*'],
+  ): Promise<Partial<User>> {
+    try {
+      const user = await this.userModel.findOne({
+        where: { ...conditions },
+        attributes: selectedFields,
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<any> {
+    try {
+      return await this.userModel.update(updateUserDto, {
+        where: { uniqueId: userId },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
