@@ -3,19 +3,21 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LoggerService } from 'src/common/logger/logger.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+    private logger: LoggerService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
       return await this.userModel.create(createUserDto);
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 
@@ -28,12 +30,13 @@ export class UserService {
         where: { ...conditions },
         attributes: selectedFields,
       });
+      this.logger.info('user', user);
       if (!user) {
         throw new NotFoundException('User not found');
       }
       return user;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 
@@ -43,7 +46,7 @@ export class UserService {
         where: { uniqueId: userId },
       });
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
     }
   }
 }
