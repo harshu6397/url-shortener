@@ -2,6 +2,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoggerService } from '../logger/logger.service';
+import * as successMessages from '../../constants/responseMessages/successMessages.json';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -9,7 +10,7 @@ export class ResponseInterceptor implements NestInterceptor {
     const logger = new LoggerService();
     const request = context.switchToHttp().getRequest();
     const excludedPaths = ['/'];
-    const includedPaths = ['/auth/google/callback'];
+    const includedPaths = ['/auth/google'];
 
     logger.info('request.url', request.url);
     if (excludedPaths.includes(request.url) || request.url.includes(includedPaths)) {
@@ -21,7 +22,7 @@ export class ResponseInterceptor implements NestInterceptor {
         return {
           statusCode: context.switchToHttp().getResponse().statusCode,
           success: true,
-          message: data.message || 'Success',
+          message: data.message || successMessages.DEFAULT_SUCCESS_MESSAGE,
           data: data.data || null,
         };
       }),

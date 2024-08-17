@@ -31,7 +31,6 @@ export class UserService {
         where: { ...conditions },
         attributes: selectedFields,
       });
-      this.logger.info('user', user);
       if (!user) {
         return null;
       }

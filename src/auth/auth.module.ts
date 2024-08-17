@@ -7,15 +7,13 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { UserModule } from '../user/user.module';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { getJwtConfig } from '../config/jwt.config';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET_KEY'),
-        signOptions: { expiresIn: '30d' },
-      }),
+      useFactory: async (configService: ConfigService) => getJwtConfig(configService),
       inject: [ConfigService],
     }),
     UserModule,

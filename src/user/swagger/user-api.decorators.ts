@@ -1,10 +1,10 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiBody, ApiSecurity } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
 export function GetUserProfileDoc() {
   return applyDecorators(
-    ApiSecurity('token'),
+    ApiBearerAuth('JWT-auth'),
     ApiOperation({ summary: 'Get the current user profile.' }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -31,7 +31,7 @@ export function GetUserProfileDoc() {
 
 export function UpdateUserProfileDoc() {
   return applyDecorators(
-    ApiSecurity('token'),
+    ApiBearerAuth('JWT-auth'),
     ApiOperation({ summary: 'Update the current user profile.' }),
     ApiBody({ type: UpdateUserDto }),
     ApiResponse({

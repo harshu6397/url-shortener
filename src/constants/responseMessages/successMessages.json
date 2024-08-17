@@ -1,1 +1,7 @@
-{}
+{
+    "DEFAULT_SUCCESS_MESSAGE": "Success",
+    "USER_REGISTERED_SUCCESS": "User registered successfully",
+    "USER_PROFILE_UPDATED_SUCCESS": "User profile updated successfully",
+    "USER_PROFILE_RETRIEVED_SUCCESS": "User profile retrieved successfully",
+    "USER_LOGGED_IN_SUCCESS": "User logged in successfully"
+}

@@ -4,12 +4,12 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from './user.model';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { GetUserProfileDoc, UpdateUserProfileDoc } from 'src/user/swagger/user-api.decorators';
+import * as successMessages from '../constants/responseMessages/successMessages.json';
 
 @Controller('users')
 @ApiTags('users')
-@ApiBearerAuth('JWT-auth')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -17,7 +17,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @GetUserProfileDoc()
   async getUserProfile(@CurrentUser() user: User) {
-    return { message: 'User profile retrieved successfully', data: user };
+    return { message: successMessages.USER_PROFILE_RETRIEVED_SUCCESS, data: user };
   }
 
   @Patch('profile')
@@ -25,6 +25,6 @@ export class UserController {
   @UpdateUserProfileDoc()
   async updateUserProfile(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     await this.userService.updateUser(user.uniqueId, updateUserDto);
-    return { message: 'User profile updated successfully' };
+    return { message: successMessages.USER_PROFILE_UPDATED_SUCCESS };
   }
 }
