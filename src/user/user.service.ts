@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from '../auth/dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoggerService } from 'src/common/logger/logger.service';
 
@@ -15,9 +15,10 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
-      return await this.userModel.create(createUserDto);
+      return await this.userModel.create(createUserDto, { raw: true });
     } catch (error) {
       this.logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -32,11 +33,12 @@ export class UserService {
       });
       this.logger.info('user', user);
       if (!user) {
-        throw new NotFoundException('User not found');
+        return null;
       }
       return user;
     } catch (error) {
       this.logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -47,6 +49,7 @@ export class UserService {
       });
     } catch (error) {
       this.logger.error(error);
+      throw new Error(error);
     }
   }
 }
