@@ -5,6 +5,8 @@ import { UserService } from '../../user/user.service';
 import { generateRandomPassword } from 'src/utils/common';
 import { USER_SELECT } from 'src/constants/selectedDBFields.json';
 import { ConfigService } from '@nestjs/config';
+import { ROLES, USER_LOGIN_TYPE } from '../../constants/appConstants.json';
+import { LoggerService } from 'src/common/logger/logger.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -29,13 +31,18 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { name, emails } = profile;
     const email = emails[0].value;
     let user = await this.userService.findUser({ email }, USER_SELECT);
+
     if (!user) {
-      user = await this.userService.createUser({
-        username: name.givenName,
-        email,
-        password: generateRandomPassword(),
-        avatarUrl: profile.photos[0].value,
-      });
+      user = await this.userService.createUser(
+        {
+          username: name.givenName,
+          email,
+          password: generateRandomPassword(),
+          avatarUrl: profile.photos[0].value,
+          userLoginType: USER_LOGIN_TYPE.GOOGLE
+        },
+        ROLES.USER,
+      );
     }
 
     done(null, user);

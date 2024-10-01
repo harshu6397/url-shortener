@@ -25,30 +25,11 @@ export class CreateUserDto {
   })
   password: string;
 
-  @ApiProperty({
-    example: 'example.com',
-    description: 'Custom domain for the User',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  customDomain?: string;
-
-  @ApiProperty({
-    example: 'http://example.com/avatar.jpg',
-    description: 'Avatar URL for the User',
-    required: false,
-  })
   @IsOptional()
   @IsString()
   avatarUrl?: string;
 
-  @ApiProperty({
-    example: 'completeProfile',
-    description: 'Next action for the User',
-    required: false,
-  })
   @IsOptional()
   @IsString()
-  nextAction?: string;
+  userLoginType?: string;
 }

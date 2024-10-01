@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Req, Res, UseGuards } from '@nestjs/common
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SignInUserDto } from './dto/signin-user.dto';
-import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { GoogleAuthGuard } from '../common/guards/google-auth.guard';
 import { Request, Response } from 'express';
 import {
   RegisterUserDoc,
@@ -12,11 +12,12 @@ import {
 } from 'src/auth/swagger/auth-api.decorators';
 import { ApiTags } from '@nestjs/swagger';
 import * as successMessages from '../constants/responseMessages/successMessages.json';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly configService: ConfigService ) {}
 
   @Post('register')
   @RegisterUserDoc()
@@ -49,6 +50,6 @@ export class AuthController {
     const user = req.user as any;
     const payload = { email: user.email, sub: user.uniqueId };
     const accessToken = this.authService.generateJwt(payload);
-    return res.redirect(`http://localhost:3000/auth/callback?token=${accessToken}`);
+    return res.redirect(`${this.configService.get<string>('FRONTEND_BASE_URL')}/auth/callback?token=${accessToken}`);
   }
 }

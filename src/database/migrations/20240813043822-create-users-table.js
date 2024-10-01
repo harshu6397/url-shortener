@@ -1,7 +1,10 @@
 'use strict';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { ROLES, USER_LOGIN_TYPE } = require('../../constants/appConstants.json');
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
@@ -37,6 +40,16 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false,
       },
+      role: {
+        type: Sequelize.ENUM(Object.values(ROLES)),
+        defaultValue: ROLES.USER,
+        allowNull: false,
+      },
+      user_login_type: {
+        type: Sequelize.ENUM(Object.values(USER_LOGIN_TYPE)),
+        defaultValue: USER_LOGIN_TYPE.EMAIL_PASSWORD,
+        allowNull: false,
+      },
       custom_domain: {
         type: Sequelize.STRING(255),
         allowNull: true,
@@ -46,7 +59,7 @@ module.exports = {
         allowNull: true,
       },
       next_action: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true,
       },
       is_active: {
@@ -60,7 +73,7 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface) => {
+  async down(queryInterface) {
     await queryInterface.dropTable('users');
   },
 };

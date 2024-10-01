@@ -5,6 +5,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { SignInUserDto } from './dto/signin-user.dto';
 import * as bcrypt from 'bcrypt';
 import * as errorMessages from '../constants/responseMessages/errorMessages.json';
+import { ROLES } from '../constants/appConstants.json';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AuthService {
@@ -13,27 +15,24 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<any> {
+  async register(createUserDto: CreateUserDto, role: string = ROLES.USER): Promise<any> {
     const { email, username } = createUserDto;
 
-    // Check if a user with the same email already exists
-    const existingUserByEmail = await this.userService.findUser({ email }, ['email']);
-    if (existingUserByEmail) {
-      throw new ConflictException(errorMessages.USER_EMAIL_ALREADY_EXISTS);
-    }
+    const existingUser = await this.userService.findUser({ [Op.or]: [{ email }, { username }] }, [
+      'email',
+      'username',
+    ]);
 
-    // Check if a user with the same username already exists
-    const existingUserByUsername = await this.userService.findUser({ username }, ['username']);
-    if (existingUserByUsername) {
-      throw new ConflictException(errorMessages.USER_USERNAME_ALREADY_EXISTS);
+    if (existingUser) {
+      throw new ConflictException('Email or Username already exists');
     }
 
     // Hash the password and create the user
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = await this.userService.createUser({
-      ...createUserDto,
-      password: hashedPassword,
-    });
+    const user = await this.userService.createUser(
+      { ...createUserDto, password: hashedPassword },
+      role,
+    );
 
     // Generate JWT token
     const payload = { email: user.email, sub: user.id };

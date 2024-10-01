@@ -13,9 +13,12 @@ export class UserService {
     private logger: LoggerService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto, role: string): Promise<User> {
     try {
-      return await this.userModel.create(createUserDto, { raw: true });
+      return await this.userModel.create({
+        ...createUserDto,
+        role,
+      });
     } catch (error) {
       this.logger.error(error);
       throw new Error(error);
@@ -23,7 +26,7 @@ export class UserService {
   }
 
   async findUser(
-    conditions: Partial<User>,
+    conditions: Partial<User | any>,
     selectedFields: Array<string> = ['*'],
   ): Promise<Partial<User>> {
     try {
